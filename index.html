@@ -3,109 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POP! 현우</title>
-    <link rel="stylesheet" href="login.css">
+    <meta name="robots" content="noindex, nofollow"> 
+    <title>팝 현우 POP HYEONWOO</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-        }
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 350px;
-        }
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-        .google-btn {
-            background-color: white;
-            color: #444;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
+            padding: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            
-            /* 부드러운 애니메이션 및 가운데 정렬 */
-            transition: all 0.3s ease-in-out;
-            margin: 0 auto;
-        }
-        
-        /* 마우스를 올렸을 때(Hover) 너비 축소 및 색반전 효과 */
-        .google-btn:hover {
-            width: 85%;
-            background-color: #222222;
-            color: #ffffff;
-            border-color: #222222;
+            height: 100vh;
+            background-color: #f4f4f9;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
         }
 
-        .logout-btn {
-            background-color: #ff4d4f;
+        /* 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 (PC 기준) */
+        .user-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            padding: 6px 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .user-controls span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-left: 2px;
+        }
+
+        .control-btn {
+            background-color: #4f46e5;
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 10px 20px;
-            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
             cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
             transition: background-color 0.2s;
         }
-        .logout-btn:hover {
+
+        .control-btn:hover {
+            background-color: #4338ca;
+        }
+
+        .control-btn.logout {
+            background-color: #ff4d4f;
+        }
+
+        .control-btn.logout:hover {
             background-color: #ff7875;
         }
-        #user-info {
-            display: none;
+
+        /* 랭킹 보드 스타일 (PC 기준) */
+        .ranking-board {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 160px;
+            z-index: 10;
+        }
+
+        .ranking-board h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+
+        #rankList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+            color: #555;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        #rankList li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding-bottom: 3px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        #score {
+            font-size: 80px;
+            margin: 15px 0;
+            color: #333;
+            text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
+        }
+
+        #popImage {
+            width: 350px;
+            height: auto;
+            cursor: pointer;
+            -webkit-user-drag: none;
+            border-radius: 20px;
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
+            transition: transform 0.05s;
+        }
+        
+        #popImage:active {
+            transform: scale(0.95);
+        }
+
+        /* 📱 모바일 화면 (가로폭 768px 이하) 전용 설정 */
+        @media (max-width: 768px) {
+            .ranking-board {
+                width: 95px;            
+                padding: 5px 6px;
+                top: 8px;
+                left: 8px;
+                border-radius: 8px;
+            }
+            .ranking-board h3 {
+                font-size: 9px;
+                margin-bottom: 3px;
+                padding-bottom: 2px;
+            }
+            #rankList {
+                font-size: 8px;         
+                max-height: 70px;
+            }
+            #rankList li {
+                margin-bottom: 2px;
+                padding-bottom: 1px;
+            }
+
+            .user-controls {
+                top: 8px;
+                right: 8px;
+                padding: 3px 6px;
+                gap: 3px;
+                border-radius: 20px;
+            }
+            .user-controls span {
+                font-size: 9px;         
+            }
+            .control-btn {
+                padding: 2px 5px;
+                font-size: 8px;         
+                border-radius: 8px;
+            }
+
+            #score {
+                font-size: 50px;
+                margin: 5px 0;
+            }
+
+            /* 모바일에서 클릭하는 이미지만 시원하게 크게 키움 (310px) */
+            #popImage {
+                width: 310px;           
+            }
+        }
+
+        /* 팝업창 스타일 */
+        #popupOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 85%;
+            max-height: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .popup-content img {
+            max-width: 260px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .popup-close-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .popup-close-btn:hover {
+            background-color: #555;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <!-- 로그인 전 화면 -->
-        <div id="login-section">
-            <h2>WELCOME TO POP! 현우</h2>
-            <p>POP! 현우를 이용하려면 구글 계정으로 로그인해 주세요!</p>
-            <button id="google-login-btn" class="google-btn">
-                <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                구글로 로그인
-            </button>
-        </div>
-
-        <!-- 로그인 후 화면 (이 화면을 거치지 않고 바로 페이지를 이동시키려면 아래 스크립트를 조정할 수 있습니다) -->
-        <div id="user-info">
-            <h2 id="welcome-msg"></h2>
-            <p id="user-email"></p>
-            <button id="logout-btn" class="logout-btn">로그아웃</button>
+    <!-- 팝업창 -->
+    <div id="popupOverlay">
+        <div class="popup-content">
+            <img src="공지.jpg" alt="공지 이미지">
+            <button id="popupCloseBtn" class="popup-close-btn">닫기</button>
         </div>
     </div>
 
-    <!-- Firebase SDK 및 로그인 로직 -->
+    <div class="ranking-board">
+        <h3>🏆 랭킹</h3>
+        <ul id="rankList">
+            <li>로딩중</li>
+        </ul>
+    </div>
+
+    <div id="userControls" class="user-controls" style="display: none;">
+        <span id="userName">사용자님</span>
+        <button id="configBtn" class="control-btn">⚙️</button>
+        <button id="logoutBtn" class="control-btn logout">로그아웃</button>
+    </div>
+
+    <h1 id="score">0</h1>
+    <img id="popImage" src="닫음.jpg" alt="Pop Face">
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkc_5meIA6xKzLyfLvR1Q3LI4yaCOENXw",
@@ -118,46 +269,181 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        const db = getFirestore(app);
 
-        const loginBtn = document.getElementById('google-login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const loginSection = document.getElementById('login-section');
-        const userInfo = document.getElementById('user-info');
-        const welcomeMsg = document.getElementById('welcome-msg');
-        const userEmail = document.getElementById('user-email');
+        const SECRET_PASSWORD = "현우짱"; 
+        const userInput = prompt("POP! 현우의 암호를 입력하세요!");
 
-        // 구글 로그인 실행
-        loginBtn.addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    // 로그인 성공 시 이동할 페이지 (예: main.html 또는 index.html 등)
-                    // 현재 파일이 index.html이라면 다른 메인 서비스 페이지 파일명으로 적어주세요.
-                    window.location.href = "main.html"; 
-                })
-                .catch((error) => {
-                    console.error("로그인 실패:", error);
-                });
+        if (userInput !== SECRET_PASSWORD) {
+            alert("비밀번호가 틀렸습니다! 접근 권한이 없습니다.");
+            document.body.innerHTML = `
+                <div style="text-align: center; margin-top: 20vh; font-family: sans-serif;">
+                    <h1 style="font-size: 80px;">🔒</h1>
+                    <h2 style="color: #ff5e5e; font-size: 24px;">접근이 차단되었습니다.</h2>
+                    <p style="color: #666;">올바른 비밀번호를 입력해야 접속할 수 있습니다.</p>
+                </div>
+            `;
+            throw new Error("Access Denied: Incorrect Password");
+        }
+
+        const popupOverlay = document.getElementById('popupOverlay');
+        const popupCloseBtn = document.getElementById('popupCloseBtn');
+
+        popupCloseBtn.addEventListener('click', () => {
+            popupOverlay.style.display = 'none';
         });
 
-        // 로그아웃 실행
+        popupOverlay.addEventListener('click', (e) => {
+            if (e.target === popupOverlay) {
+                popupOverlay.style.display = 'none';
+            }
+        });
+
+        const userControls = document.getElementById('userControls');
+        const userNameSpan = document.getElementById('userName');
+        const configBtn = document.getElementById('configBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const scoreDisplay = document.getElementById('score');
+        const rankList = document.getElementById('rankList');
+        const popImage = document.getElementById('popImage');
+
+        let score = 0;
+        let currentNickname = "익명";
+        let currentUser = null;
+        let saveTimeout = null;
+
+        const imgClosed = '닫음.jpg';
+        const imgOpen = '열.png';
+        const popSound = new Audio('pop.mp3'); 
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        score = data.score || 0;
+                        currentNickname = data.name || user.displayName || "익명";
+                        scoreDisplay.innerText = score;
+                    } else {
+                        currentNickname = user.displayName || "익명";
+                        await setDoc(userDocRef, {
+                            name: currentNickname,
+                            score: 0,
+                            photo: user.photoURL || ""
+                        });
+                        score = 0;
+                        scoreDisplay.innerText = 0;
+                    }
+                    userNameSpan.innerText = `${currentNickname}님`;
+                    userControls.style.display = 'flex';
+                } catch (e) {
+                    console.error("데이터베이스 불러오기 오류:", e);
+                }
+
+                loadRanking();
+            } else {
+                alert("로그인이 필요한 서비스입니다!");
+                window.location.href = "index.html"; 
+            }
+        });
+
+        configBtn.addEventListener('click', async () => {
+            const newNickname = prompt("변경할 닉네임을 입력해주세요 (최대 10글자):", currentNickname);
+            if (newNickname !== null) {
+                const trimmed = newNickname.trim();
+                if (trimmed === "") {
+                    alert("닉네임은 공백일 수 없습니다.");
+                    return;
+                }
+                if (trimmed.length > 10) {
+                    alert("닉네임은 10글자 이하로 입력해주세요.");
+                    return;
+                }
+
+                currentNickname = trimmed;
+                userNameSpan.innerText = `${currentNickname}님`;
+
+                if (currentUser) {
+                    const userDocRef = doc(db, "users", currentUser.uid);
+                    await setDoc(userDocRef, {
+                        name: currentNickname,
+                        score: score,
+                        photo: currentUser.photoURL || ""
+                    }, { merge: true });
+                }
+                alert(`닉네임이 '${currentNickname}'(으)로 변경되었습니다!`);
+            }
+        });
+
+        function saveScoreToDB() {
+            if (!currentUser) return;
+            const userDocRef = doc(db, "users", currentUser.uid);
+            setDoc(userDocRef, {
+                name: currentNickname,
+                score: score,
+                photo: currentUser.photoURL || ""
+            }, { merge: true }).catch(err => {
+                console.error("점수 저장 실패:", err);
+            });
+        }
+
+        function loadRanking() {
+            const q = query(collection(db, "users"), orderBy("score", "desc"), limit(5));
+            onSnapshot(q, (snapshot) => {
+                rankList.innerHTML = "";
+                let rank = 1;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${rank}. ${data.name}</span> <strong>${data.score}</strong>`;
+                    rankList.appendChild(li);
+                    rank++;
+                });
+            }, (error) => {
+                console.error("랭킹 불러오기 실패:", error);
+                rankList.innerHTML = "<li>로드 실패</li>";
+            });
+        }
+
         logoutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
-                window.location.reload(); // 로그아웃 시 현재 페이지 새로고침
-            }).catch((error) => {
-                console.error("로그아웃 실패:", error);
+                window.location.href = "index.html"; 
             });
         });
 
-        // 이미 로그인된 상태로 접속한 경우 곧바로 페이지 이동을 원할 때 활용
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // 만약 로그인 유지 상태로 이 페이지에 들어왔을 때 바로 이동시키려면 아래 주석을 해제하세요.
-                // window.location.href = "home.html";
-            }
-        });
+        function openMouth(event) {
+            if(event) event.preventDefault(); 
+            popImage.src = imgOpen; 
+            score++; 
+            scoreDisplay.innerText = score; 
+
+            popSound.currentTime = 0; 
+            popSound.play().catch(e => console.log("오디오 재생 실패:", e)); 
+
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveScoreToDB();
+            }, 300);
+        }
+
+        function closeMouth(event) {
+            if(event) event.preventDefault();
+            popImage.src = imgClosed; 
+        }
+
+        popImage.addEventListener('mousedown', openMouth); 
+        popImage.addEventListener('mouseup', closeMouth); 
+        popImage.addEventListener('mouseleave', closeMouth); 
+
+        popImage.addEventListener('touchstart', openMouth, {passive: false}); 
+        popImage.addEventListener('touchend', closeMouth);
+        popImage.addEventListener('touchcancel', closeMouth);
     </script>
 </body>
 </html>
