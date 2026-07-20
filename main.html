@@ -20,42 +20,30 @@
             position: relative;
         }
 
-        /* 우측 상단 프로필 영역 (클릭 가능하도록 커서 추가) */
-        .user-profile-container {
+        /* 우측 상단 설정 & 로그아웃 버튼 영역 */
+        .user-controls {
             position: absolute;
             top: 20px;
             right: 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: white;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 30px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             z-index: 10;
-            cursor: pointer;
-            transition: background-color 0.2s;
         }
 
-        .user-profile-container:hover {
-            background-color: #f0f0f0;
-        }
-
-        .user-profile-container img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-profile-container span {
+        .user-controls span {
             font-size: 14px;
             font-weight: 600;
             color: #333;
+            margin-left: 4px;
         }
 
-        .mini-logout-btn {
-            background-color: #ff4d4f;
+        .control-btn {
+            background-color: #4f46e5;
             color: white;
             border: none;
             padding: 6px 12px;
@@ -65,10 +53,19 @@
             transition: background-color 0.2s;
         }
 
-        .mini-logout-btn:hover {
+        .control-btn:hover {
+            background-color: #4338ca;
+        }
+
+        .control-btn.logout {
+            background-color: #ff4d4f;
+        }
+
+        .control-btn.logout:hover {
             background-color: #ff7875;
         }
 
+        /* 랭킹 보드 스타일 */
         .ranking-board {
             position: absolute;
             top: 20px;
@@ -139,11 +136,11 @@
         </ul>
     </div>
 
-    <!-- 우측 상단 프로필 (클릭하여 닉네임 변경 가능) -->
-    <div id="userProfile" class="user-profile-container" style="display: none;" title="클릭해서 닉네임을 변경하세요!">
-        <img id="userPhoto" src="" alt="프로필 사진">
-        <span id="userName">사용자</span>
-        <button id="miniLogoutBtn" class="mini-logout-btn">로그아웃</button>
+    <!-- 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 -->
+    <div id="userControls" class="user-controls" style="display: none;">
+        <span id="userName">사용자님</span>
+        <button id="configBtn" class="control-btn">⚙️ 설정</button>
+        <button id="logoutBtn" class="control-btn logout">로그아웃</button>
     </div>
 
     <h1 id="score">0</h1>
@@ -184,10 +181,10 @@
             throw new Error("Access Denied: Incorrect Password");
         }
 
-        const userProfileDiv = document.getElementById('userProfile');
-        const userPhoto = document.getElementById('userPhoto');
+        const userControls = document.getElementById('userControls');
         const userNameSpan = document.getElementById('userName');
-        const miniLogoutBtn = document.getElementById('miniLogoutBtn');
+        const configBtn = document.getElementById('configBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
         const scoreDisplay = document.getElementById('score');
         const rankList = document.getElementById('rankList');
         const popImage = document.getElementById('popImage');
@@ -205,7 +202,6 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                userPhoto.src = user.photoURL || "https://via.placeholder.com/36";
 
                 try {
                     const userDocRef = doc(db, "users", user.uid);
@@ -227,6 +223,7 @@
                         scoreDisplay.innerText = 0;
                     }
                     userNameSpan.innerText = `${currentNickname}님`;
+                    userControls.style.display = 'flex';
                 } catch (e) {
                     console.error("데이터베이스 불러오기 오류:", e);
                 }
@@ -238,12 +235,9 @@
             }
         });
 
-        // 닉네임 변경 기능 (프로필 영역 클릭 시 작동)
-        userProfileDiv.addEventListener('click', async (e) => {
-            // 로그아웃 버튼을 클릭했을 때는 닉네임 변경창이 뜨지 않도록 예외 처리
-            if (e.target === miniLogoutBtn) return;
-
-            const newNickname = prompt("사용할 닉네임을 입력해주세요 (최대 10글자):", currentNickname);
+        // ⚙️ [설정] 버튼 클릭 시 닉네임 변경 창 띄우기
+        configBtn.addEventListener('click', async () => {
+            const newNickname = prompt("변경할 닉네임을 입력해주세요 (최대 10글자):", currentNickname);
             if (newNickname !== null) {
                 const trimmed = newNickname.trim();
                 if (trimmed === "") {
@@ -301,7 +295,7 @@
             });
         }
 
-        miniLogoutBtn.addEventListener('click', () => {
+        logoutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = "index.html"; 
             });
