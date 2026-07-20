@@ -18,38 +18,37 @@
             font-family: 'Arial', sans-serif;
             user-select: none;
             position: relative;
-            overflow: hidden;
         }
 
-        /* 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 (PC 기준) */
+        /* 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 */
         .user-controls {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 20px;
+            right: 20px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             background: white;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 30px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             z-index: 10;
         }
 
         .user-controls span {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: #333;
-            margin-left: 2px;
+            margin-left: 4px;
         }
 
         .control-btn {
             background-color: #4f46e5;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 15px;
-            font-size: 11px;
+            font-size: 12px;
             cursor: pointer;
             transition: background-color 0.2s;
         }
@@ -66,55 +65,55 @@
             background-color: #ff7875;
         }
 
-        /* 랭킹 보드 스타일 (PC 기준) */
+        /* 랭킹 보드 스타일 */
         .ranking-board {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 20px;
+            left: 20px;
             background: white;
-            padding: 10px 15px;
+            padding: 15px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 160px;
+            width: 200px;
             z-index: 10;
         }
 
         .ranking-board h3 {
-            margin: 0 0 8px 0;
-            font-size: 14px;
+            margin: 0 0 10px 0;
+            font-size: 16px;
             color: #333;
             text-align: center;
             border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 5px;
+            padding-bottom: 6px;
         }
 
         #rankList {
             list-style: none;
             padding: 0;
             margin: 0;
-            font-size: 12px;
+            font-size: 13px;
             color: #555;
-            max-height: 120px;
+            max-height: 150px;
             overflow-y: auto;
         }
 
         #rankList li {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
-            padding-bottom: 3px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
             border-bottom: 1px dashed #eee;
         }
 
         #score {
-            font-size: 80px;
-            margin: 15px 0;
+            font-size: 100px;
+            margin: 20px 0;
             color: #333;
             text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
         }
 
         #popImage {
-            width: 280px;
+            width: 350px;
             height: auto;
             cursor: pointer;
             -webkit-user-drag: none;
@@ -127,56 +126,7 @@
             transform: scale(0.95);
         }
 
-        /* 📱 모바일 화면 (가로폭 768px 이하) 전용: 훨씬 작게 조정 */
-        @media (max-width: 768px) {
-            .ranking-board {
-                width: 95px;            /* 랭킹창 폭을 아주 좁게 축소 */
-                padding: 5px 6px;
-                top: 8px;
-                left: 8px;
-                border-radius: 8px;
-            }
-            .ranking-board h3 {
-                font-size: 9px;
-                margin-bottom: 3px;
-                padding-bottom: 2px;
-            }
-            #rankList {
-                font-size: 8px;         /* 글씨 크기를 대폭 축소 */
-                max-height: 70px;
-            }
-            #rankList li {
-                margin-bottom: 2px;
-                padding-bottom: 1px;
-            }
-
-            .user-controls {
-                top: 8px;
-                right: 8px;
-                padding: 3px 6px;
-                gap: 3px;
-                border-radius: 20px;
-            }
-            .user-controls span {
-                font-size: 9px;         /* 닉네임 글씨 작게 */
-            }
-            .control-btn {
-                padding: 2px 5px;
-                font-size: 8px;         /* 설정/로그아웃 버튼 초소형화 */
-                border-radius: 8px;
-            }
-
-            #score {
-                font-size: 50px;
-                margin: 5px 0;
-            }
-
-            #popImage {
-                width: 200px;           /* 캐릭터 이미지도 모바일에 알맞게 축소 */
-            }
-        }
-
-        /* 팝업창 스타일 */
+        /* 팝업창 배경 (어두운 오버레이) 스타일 */
         #popupOverlay {
             position: fixed;
             top: 0;
@@ -190,26 +140,29 @@
             z-index: 1000;
         }
 
+        /* 팝업 콘텐츠 박스 */
         .popup-content {
             background: white;
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             text-align: center;
-            max-width: 85%;
-            max-height: 85%;
+            max-width: 90%;
+            max-height: 90%;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
+        /* 팝업창 내부 이미지 크기 조절 */
         .popup-content img {
-            max-width: 260px;
+            max-width: 300px;
             height: auto;
             border-radius: 10px;
             margin-bottom: 15px;
         }
 
+        /* 팝업 닫기 버튼 */
         .popup-close-btn {
             background-color: #333;
             color: white;
@@ -228,24 +181,25 @@
 </head>
 <body>
 
-    <!-- 팝업창 -->
+    <!-- 🌟 페이지 접속 시 뜨는 팝업창 영역 -->
     <div id="popupOverlay">
         <div class="popup-content">
+            <!-- 💡 아래 '공지.jpg' 부분을 원하시는 이미지 파일명으로 바꿔주세요! -->
             <img src="공지.jpg" alt="공지 이미지">
             <button id="popupCloseBtn" class="popup-close-btn">닫기</button>
         </div>
     </div>
 
     <div class="ranking-board">
-        <h3>🏆 랭킹</h3>
+        <h3>🏆 실시간 랭킹</h3>
         <ul id="rankList">
-            <li>로딩중</li>
+            <li>불러오는 중...</li>
         </ul>
     </div>
 
     <div id="userControls" class="user-controls" style="display: none;">
         <span id="userName">사용자님</span>
-        <button id="configBtn" class="control-btn">⚙️</button>
+        <button id="configBtn" class="control-btn">⚙️ 설정</button>
         <button id="logoutBtn" class="control-btn logout">로그아웃</button>
     </div>
 
@@ -271,6 +225,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // 🔑 비밀번호 체크
         const SECRET_PASSWORD = "김도현"; 
         const userInput = prompt("업데이트 개발을 위해 팝현우를 잠시 폐쇄합니다...");
 
@@ -286,6 +241,7 @@
             throw new Error("Access Denied: Incorrect Password");
         }
 
+        // 팝업창 닫기 기능 구현
         const popupOverlay = document.getElementById('popupOverlay');
         const popupCloseBtn = document.getElementById('popupCloseBtn');
 
@@ -293,6 +249,7 @@
             popupOverlay.style.display = 'none';
         });
 
+        // 팝업창 바깥 배경을 눌러도 닫히게 설정
         popupOverlay.addEventListener('click', (e) => {
             if (e.target === popupOverlay) {
                 popupOverlay.style.display = 'none';
@@ -400,13 +357,13 @@
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     const li = document.createElement('li');
-                    li.innerHTML = `<span>${rank}. ${data.name}</span> <strong>${data.score}</strong>`;
+                    li.innerHTML = `<span>${rank}. ${data.name}</span> <strong>${data.score}점</strong>`;
                     rankList.appendChild(li);
                     rank++;
                 });
             }, (error) => {
                 console.error("랭킹 불러오기 실패:", error);
-                rankList.innerHTML = "<li>로드 실패</li>";
+                rankList.innerHTML = "<li>랭킹 로드 실패</li>";
             });
         }
 
