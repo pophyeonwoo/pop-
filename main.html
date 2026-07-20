@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 구글/네이버 검색 노출을 완전히 차단하는 태그 -->
     <meta name="robots" content="noindex, nofollow"> 
     <title>팝 현우 POP HYEONWOO</title>
     <style>
-        /* 화면 중앙 정렬 및 배경 설정 */
         body {
             margin: 0;
             padding: 0;
@@ -18,11 +16,10 @@
             height: 100vh;
             background-color: #f4f4f9;
             font-family: 'Arial', sans-serif;
-            user-select: none; /* 더블클릭 시 텍스트가 선택되는 것을 방지 */
+            user-select: none;
             position: relative;
         }
 
-        /* 우측 상단 프로필 영역 스타일 */
         .user-profile-container {
             position: absolute;
             top: 20px;
@@ -65,7 +62,6 @@
             background-color: #ff7875;
         }
 
-        /* 랭킹 보드 스타일 (좌측 상단) */
         .ranking-board {
             position: absolute;
             top: 20px;
@@ -105,7 +101,6 @@
             border-bottom: 1px dashed #eee;
         }
 
-        /* 점수판 스타일 */
         #score {
             font-size: 100px;
             margin: 20px 0;
@@ -113,12 +108,11 @@
             text-shadow: 3px 3px 5px rgba(0,0,0,0.2);
         }
 
-        /* 이미지 스타일 */
         #popImage {
             width: 350px;
             height: auto;
             cursor: pointer;
-            -webkit-user-drag: none; /* 이미지 드래그 방지 */
+            -webkit-user-drag: none;
             border-radius: 20px;
             box-shadow: 0px 10px 20px rgba(0,0,0,0.15);
             transition: transform 0.05s;
@@ -131,7 +125,6 @@
 </head>
 <body>
 
-    <!-- 좌측 상단 실시간 랭킹 보드 -->
     <div class="ranking-board">
         <h3>🏆 실시간 랭킹</h3>
         <ul id="rankList">
@@ -139,26 +132,20 @@
         </ul>
     </div>
 
-    <!-- 우측 상단 구글 프로필 & 로그아웃 영역 -->
     <div id="userProfile" class="user-profile-container" style="display: none;">
         <img id="userPhoto" src="" alt="프로필 사진">
         <span id="userName">사용자</span>
         <button id="miniLogoutBtn" class="mini-logout-btn">로그아웃</button>
     </div>
 
-    <!-- 점수판 -->
     <h1 id="score">0</h1>
-    
-    <!-- 기본 상태 이미지 -->
     <img id="popImage" src="닫음.jpg" alt="Pop Face">
 
-    <!-- Firebase SDK 및 기능 스크립트 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, update, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 본인의 파이어베이스 설정 정보 입력
         const firebaseConfig = {
             apiKey: "AIzaSyAkc_5meIA6xKzLyfLvR1Q3LI4yaCOENXw",
             authDomain: "pophyeonwoo.firebaseapp.com",
@@ -173,93 +160,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const userProfileDiv = document.getElementById('userProfile');
-        const userPhoto = document.getElementById('userPhoto');
-        const userName = document.getElementById('userName');
-        const miniLogoutBtn = document.getElementById('miniLogoutBtn');
-        const scoreDisplay = document.getElementById('score');
-        const rankList = document.getElementById('rankList');
-
-        let score = 0;
-        let currentUser = null;
-        let saveTimeout = null;
-
-        // 로그인 상태 체크 및 데이터베이스에서 기존 점수 불러오기
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                userPhoto.src = user.photoURL || "https://via.placeholder.com/36";
-                userName.innerText = user.displayName ? `${user.displayName}님` : "사용자";
-                userProfileDiv.style.display = 'flex';
-
-                // 파이어베이스 Firestore에서 해당 유저의 점수 가져오기
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
-
-                if (userDoc.exists()) {
-                    score = userDoc.data().score || 0;
-                    scoreDisplay.innerText = score;
-                } else {
-                    // 처음 로그인한 유저라면 0점으로 문서 생성
-                    await setDoc(userDocRef, {
-                        name: user.displayName || "익명",
-                        score: 0,
-                        photo: user.photoURL || ""
-                    });
-                    score = 0;
-                    scoreDisplay.innerText = 0;
-                }
-
-                // 랭킹 리스트 실시간 불러오기 시작
-                loadRanking();
-
-            } else {
-                alert("로그인이 필요한 서비스입니다!");
-                window.location.href = "index.html"; 
-            }
-        });
-
-        // 점수를 데이터베이스에 저장하는 함수 (디바운싱 적용으로 과도한 요청 방지)
-        function saveScoreToDB() {
-            if (!currentUser) return;
-            const userDocRef = doc(db, "users", currentUser.uid);
-            setDoc(userDocRef, {
-                name: currentUser.displayName || "익명",
-                score: score,
-                photo: currentUser.photoURL || ""
-            }, { merge: true });
-        }
-
-        // 실시간 랭킹 리스트 가져오기 (점수 높은 순으로 상위 5명)
-        function loadRanking() {
-            const q = query(collection(db, "users"), orderBy("score", "desc"), limit(5));
-            onSnapshot(q, (snapshot) => {
-                rankList.innerHTML = "";
-                let rank = 1;
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span>${rank}. ${data.name}</span> <strong>${data.score}점</strong>`;
-                    rankList.appendChild(li);
-                    rank++;
-                });
-            });
-        }
-
-        // 미니 로그아웃 버튼 기능
-        miniLogoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = "index.html"; 
-            }).catch((error) => {
-                console.error("로그아웃 실패:", error);
-            });
-        });
-
-        // ==========================================
-        // 🔑 비밀번호 설정 구역
-        // ==========================================
+        // 🔑 비밀번호 체크 (페이지 로드 시 가장 먼저 실행)
         const SECRET_PASSWORD = "김도현"; 
-
         const userInput = prompt("업데이트 개발을 위해 팝현우를 잠시 폐쇄합니다...");
 
         if (userInput !== SECRET_PASSWORD) {
@@ -273,38 +175,115 @@
             `;
             throw new Error("Access Denied: Incorrect Password");
         }
-        // ==========================================
 
+        const userProfileDiv = document.getElementById('userProfile');
+        const userPhoto = document.getElementById('userPhoto');
+        const userName = document.getElementById('userName');
+        const miniLogoutBtn = document.getElementById('miniLogoutBtn');
+        const scoreDisplay = document.getElementById('score');
+        const rankList = document.getElementById('rankList');
         const popImage = document.getElementById('popImage');
+
+        let score = 0;
+        let currentUser = null;
+        let saveTimeout = null;
+
         const imgClosed = '닫음.jpg';
         const imgOpen = '열.png';
         const popSound = new Audio('pop.mp3'); 
 
-        // 3. 입 벌리기 + 점수 올리기 + 소리 재생 + DB 저장 연동
+        // 로그인 상태 감지 및 데이터 로드
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                userPhoto.src = user.photoURL || "https://via.placeholder.com/36";
+                userName.innerText = user.displayName ? `${user.displayName}님` : "사용자";
+                userProfileDiv.style.display = 'flex';
+
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+
+                    if (userDoc.exists()) {
+                        score = userDoc.data().score || 0;
+                        scoreDisplay.innerText = score;
+                    } else {
+                        await setDoc(userDocRef, {
+                            name: user.displayName || "익명",
+                            score: 0,
+                            photo: user.photoURL || ""
+                        });
+                        score = 0;
+                        scoreDisplay.innerText = 0;
+                    }
+                } catch (e) {
+                    console.error("데이터베이스 불러오기 오류 (Firestore 규칙을 확인하세요):", e);
+                }
+
+                loadRanking();
+            } else {
+                alert("로그인이 필요한 서비스입니다!");
+                window.location.href = "index.html"; 
+            }
+        });
+
+        function saveScoreToDB() {
+            if (!currentUser) return;
+            const userDocRef = doc(db, "users", currentUser.uid);
+            setDoc(userDocRef, {
+                name: currentUser.displayName || "익명",
+                score: score,
+                photo: currentUser.photoURL || ""
+            }, { merge: true }).catch(err => {
+                console.error("점수 저장 실패:", err);
+            });
+        }
+
+        function loadRanking() {
+            const q = query(collection(db, "users"), orderBy("score", "desc"), limit(5));
+            onSnapshot(q, (snapshot) => {
+                rankList.innerHTML = "";
+                let rank = 1;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${rank}. ${data.name}</span> <strong>${data.score}점</strong>`;
+                    rankList.appendChild(li);
+                    rank++;
+                });
+            }, (error) => {
+                console.error("랭킹 불러오기 실패:", error);
+                rankList.innerHTML = "<li>랭킹 로드 실패</li>";
+            });
+        }
+
+        miniLogoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "index.html"; 
+            });
+        });
+
+        // 클릭 이벤트 함수들
         function openMouth(event) {
             if(event) event.preventDefault(); 
-
             popImage.src = imgOpen; 
             score++; 
             scoreDisplay.innerText = score; 
 
             popSound.currentTime = 0; 
-            popSound.play(); 
+            popSound.play().catch(e => console.log("오디오 재생 실패:", e)); 
 
-            // 클릭할 때마다 실시간으로 점수 저장 (서버 부하 방지를 위해 딜레이나 즉시 반영 조절 가능)
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => {
                 saveScoreToDB();
-            }, 300); // 마지막 클릭 후 0.3초 뒤에 서버에 최종 점수 반영
+            }, 300);
         }
 
-        // 4. 입 다물기
         function closeMouth(event) {
             if(event) event.preventDefault();
             popImage.src = imgClosed; 
         }
 
-        // 5. 마우스 및 터치 이벤트 바인딩
         popImage.addEventListener('mousedown', openMouth); 
         popImage.addEventListener('mouseup', closeMouth); 
         popImage.addEventListener('mouseleave', closeMouth); 
@@ -313,6 +292,5 @@
         popImage.addEventListener('touchend', closeMouth);
         popImage.addEventListener('touchcancel', closeMouth);
     </script>
-
 </body>
 </html>
