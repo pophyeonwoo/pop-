@@ -20,7 +20,7 @@
             position: relative;
         }
 
-        /* 우측 상단 설정 & 로그아웃 버튼 영역 */
+        /* 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 */
         .user-controls {
             position: absolute;
             top: 20px;
@@ -125,9 +125,70 @@
         #popImage:active {
             transform: scale(0.95);
         }
+
+        /* 팝업창 배경 (어두운 오버레이) 스타일 */
+        #popupOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* 팝업 콘텐츠 박스 */
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 팝업창 내부 이미지 크기 조절 */
+        .popup-content img {
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* 팝업 닫기 버튼 */
+        .popup-close-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .popup-close-btn:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
+
+    <!-- 🌟 페이지 접속 시 뜨는 팝업창 영역 -->
+    <div id="popupOverlay">
+        <div class="popup-content">
+            <!-- 💡 아래 '공지.jpg' 부분을 원하시는 이미지 파일명으로 바꿔주세요! -->
+            <img src="공지.jpg" alt="공지 이미지">
+            <button id="popupCloseBtn" class="popup-close-btn">닫기</button>
+        </div>
+    </div>
 
     <div class="ranking-board">
         <h3>🏆 실시간 랭킹</h3>
@@ -136,7 +197,6 @@
         </ul>
     </div>
 
-    <!-- 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 -->
     <div id="userControls" class="user-controls" style="display: none;">
         <span id="userName">사용자님</span>
         <button id="configBtn" class="control-btn">⚙️ 설정</button>
@@ -181,6 +241,21 @@
             throw new Error("Access Denied: Incorrect Password");
         }
 
+        // 팝업창 닫기 기능 구현
+        const popupOverlay = document.getElementById('popupOverlay');
+        const popupCloseBtn = document.getElementById('popupCloseBtn');
+
+        popupCloseBtn.addEventListener('click', () => {
+            popupOverlay.style.display = 'none';
+        });
+
+        // 팝업창 바깥 배경을 눌러도 닫히게 설정
+        popupOverlay.addEventListener('click', (e) => {
+            if (e.target === popupOverlay) {
+                popupOverlay.style.display = 'none';
+            }
+        });
+
         const userControls = document.getElementById('userControls');
         const userNameSpan = document.getElementById('userName');
         const configBtn = document.getElementById('configBtn');
@@ -198,7 +273,6 @@
         const imgOpen = '열.png';
         const popSound = new Audio('pop.mp3'); 
 
-        // 로그인 상태 감지 및 데이터 로드
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -235,7 +309,6 @@
             }
         });
 
-        // ⚙️ [설정] 버튼 클릭 시 닉네임 변경 창 띄우기
         configBtn.addEventListener('click', async () => {
             const newNickname = prompt("변경할 닉네임을 입력해주세요 (최대 10글자):", currentNickname);
             if (newNickname !== null) {
@@ -252,7 +325,6 @@
                 currentNickname = trimmed;
                 userNameSpan.innerText = `${currentNickname}님`;
 
-                // 파이어베이스에 즉시 반영
                 if (currentUser) {
                     const userDocRef = doc(db, "users", currentUser.uid);
                     await setDoc(userDocRef, {
@@ -301,7 +373,6 @@
             });
         });
 
-        // 클릭 이벤트 함수들
         function openMouth(event) {
             if(event) event.preventDefault(); 
             popImage.src = imgOpen; 
