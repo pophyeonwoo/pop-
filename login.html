@@ -93,7 +93,7 @@
             </button>
         </div>
 
-        <!-- 로그인 후 화면 -->
+        <!-- 로그인 후 화면 (이 화면을 거치지 않고 바로 페이지를 이동시키려면 아래 스크립트를 조정할 수 있습니다) -->
         <div id="user-info">
             <h2 id="welcome-msg"></h2>
             <p id="user-email"></p>
@@ -107,7 +107,6 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // 파이어베이스 설정 및 Analytics 추가
         const firebaseConfig = {
             apiKey: "AIzaSyAkc_5meIA6xKzLyfLvR1Q3LI4yaCOENXw",
             authDomain: "pophyeonwoo.firebaseapp.com",
@@ -133,6 +132,11 @@
         // 구글 로그인 실행
         loginBtn.addEventListener('click', () => {
             signInWithPopup(auth, provider)
+                .then((result) => {
+                    // 로그인 성공 시 이동할 페이지 (예: main.html 또는 index.html 등)
+                    // 현재 파일이 index.html이라면 다른 메인 서비스 페이지 파일명으로 적어주세요.
+                    window.location.href = "home.html"; 
+                })
                 .catch((error) => {
                     console.error("로그인 실패:", error);
                 });
@@ -140,21 +144,18 @@
 
         // 로그아웃 실행
         logoutBtn.addEventListener('click', () => {
-            signOut(auth).catch((error) => {
+            signOut(auth).then(() => {
+                window.location.reload(); // 로그아웃 시 현재 페이지 새로고침
+            }).catch((error) => {
                 console.error("로그아웃 실패:", error);
             });
         });
 
-        // 로그인 상태에 따른 화면 전환 감지
+        // 이미 로그인된 상태로 접속한 경우 곧바로 페이지 이동을 원할 때 활용
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                loginSection.style.display = 'none';
-                userInfo.style.display = 'block';
-                welcomeMsg.innerText = `${user.displayName}님 환영합니다!`;
-                userEmail.innerText = user.email;
-            } else {
-                loginSection.style.display = 'block';
-                userInfo.style.display = 'none';
+                // 만약 로그인 유지 상태로 이 페이지에 들어왔을 때 바로 이동시키려면 아래 주석을 해제하세요.
+                // window.location.href = "home.html";
             }
         });
     </script>
