@@ -20,6 +20,7 @@
             position: relative;
         }
 
+        /* 우측 상단 프로필 영역 (클릭 가능하도록 커서 추가) */
         .user-profile-container {
             position: absolute;
             top: 20px;
@@ -32,6 +33,12 @@
             border-radius: 30px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             z-index: 10;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .user-profile-container:hover {
+            background-color: #f0f0f0;
         }
 
         .user-profile-container img {
@@ -132,7 +139,8 @@
         </ul>
     </div>
 
-    <div id="userProfile" class="user-profile-container" style="display: none;">
+    <!-- 우측 상단 프로필 (클릭하여 닉네임 변경 가능) -->
+    <div id="userProfile" class="user-profile-container" style="display: none;" title="클릭해서 닉네임을 변경하세요!">
         <img id="userPhoto" src="" alt="프로필 사진">
         <span id="userName">사용자</span>
         <button id="miniLogoutBtn" class="mini-logout-btn">로그아웃</button>
@@ -160,7 +168,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 🔑 비밀번호 체크 (페이지 로드 시 가장 먼저 실행)
+        // 🔑 비밀번호 체크
         const SECRET_PASSWORD = "김도현"; 
         const userInput = prompt("업데이트 개발을 위해 팝현우를 잠시 폐쇄합니다...");
 
@@ -178,13 +186,14 @@
 
         const userProfileDiv = document.getElementById('userProfile');
         const userPhoto = document.getElementById('userPhoto');
-        const userName = document.getElementById('userName');
+        const userNameSpan = document.getElementById('userName');
         const miniLogoutBtn = document.getElementById('miniLogoutBtn');
         const scoreDisplay = document.getElementById('score');
         const rankList = document.getElementById('rankList');
         const popImage = document.getElementById('popImage');
 
         let score = 0;
+        let currentNickname = "익명";
         let currentUser = null;
         let saveTimeout = null;
 
@@ -197,27 +206,29 @@
             if (user) {
                 currentUser = user;
                 userPhoto.src = user.photoURL || "https://via.placeholder.com/36";
-                userName.innerText = user.displayName ? `${user.displayName}님` : "사용자";
-                userProfileDiv.style.display = 'flex';
 
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(userDocRef);
 
                     if (userDoc.exists()) {
-                        score = userDoc.data().score || 0;
+                        const data = userDoc.data();
+                        score = data.score || 0;
+                        currentNickname = data.name || user.displayName || "익명";
                         scoreDisplay.innerText = score;
                     } else {
+                        currentNickname = user.displayName || "익명";
                         await setDoc(userDocRef, {
-                            name: user.displayName || "익명",
+                            name: currentNickname,
                             score: 0,
                             photo: user.photoURL || ""
                         });
                         score = 0;
                         scoreDisplay.innerText = 0;
                     }
+                    userNameSpan.innerText = `${currentNickname}님`;
                 } catch (e) {
-                    console.error("데이터베이스 불러오기 오류 (Firestore 규칙을 확인하세요):", e);
+                    console.error("데이터베이스 불러오기 오류:", e);
                 }
 
                 loadRanking();
@@ -227,11 +238,44 @@
             }
         });
 
+        // 닉네임 변경 기능 (프로필 영역 클릭 시 작동)
+        userProfileDiv.addEventListener('click', async (e) => {
+            // 로그아웃 버튼을 클릭했을 때는 닉네임 변경창이 뜨지 않도록 예외 처리
+            if (e.target === miniLogoutBtn) return;
+
+            const newNickname = prompt("사용할 닉네임을 입력해주세요 (최대 10글자):", currentNickname);
+            if (newNickname !== null) {
+                const trimmed = newNickname.trim();
+                if (trimmed === "") {
+                    alert("닉네임은 공백일 수 없습니다.");
+                    return;
+                }
+                if (trimmed.length > 10) {
+                    alert("닉네임은 10글자 이하로 입력해주세요.");
+                    return;
+                }
+
+                currentNickname = trimmed;
+                userNameSpan.innerText = `${currentNickname}님`;
+
+                // 파이어베이스에 즉시 반영
+                if (currentUser) {
+                    const userDocRef = doc(db, "users", currentUser.uid);
+                    await setDoc(userDocRef, {
+                        name: currentNickname,
+                        score: score,
+                        photo: currentUser.photoURL || ""
+                    }, { merge: true });
+                }
+                alert(`닉네임이 '${currentNickname}'(으)로 변경되었습니다!`);
+            }
+        });
+
         function saveScoreToDB() {
             if (!currentUser) return;
             const userDocRef = doc(db, "users", currentUser.uid);
             setDoc(userDocRef, {
-                name: currentUser.displayName || "익명",
+                name: currentNickname,
                 score: score,
                 photo: currentUser.photoURL || ""
             }, { merge: true }).catch(err => {
