@@ -21,7 +21,7 @@
             overflow: hidden;
         }
 
-        /* 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 */
+        /* 우측 상단 닉네임, 설정 버튼, 로그아웃 버튼 (PC 기준) */
         .user-controls {
             position: absolute;
             top: 15px;
@@ -66,7 +66,7 @@
             background-color: #ff7875;
         }
 
-        /* 랭킹 보드 스타일 */
+        /* 랭킹 보드 스타일 (PC 기준) */
         .ranking-board {
             position: absolute;
             top: 15px;
@@ -127,45 +127,52 @@
             transform: scale(0.95);
         }
 
-        /* 📱 모바일 화면 (가로폭 768px 이하) 전용 추가 줄임 설정 */
+        /* 📱 모바일 화면 (가로폭 768px 이하) 전용: 훨씬 작게 조정 */
         @media (max-width: 768px) {
             .ranking-board {
-                width: 120px;
-                padding: 8px 10px;
-                top: 10px;
-                left: 10px;
+                width: 95px;            /* 랭킹창 폭을 아주 좁게 축소 */
+                padding: 5px 6px;
+                top: 8px;
+                left: 8px;
+                border-radius: 8px;
             }
             .ranking-board h3 {
-                font-size: 11px;
-                margin-bottom: 5px;
+                font-size: 9px;
+                margin-bottom: 3px;
+                padding-bottom: 2px;
             }
             #rankList {
-                font-size: 10px;
-                max-height: 90px;
+                font-size: 8px;         /* 글씨 크기를 대폭 축소 */
+                max-height: 70px;
+            }
+            #rankList li {
+                margin-bottom: 2px;
+                padding-bottom: 1px;
             }
 
             .user-controls {
-                top: 10px;
-                right: 10px;
-                padding: 4px 8px;
-                gap: 4px;
+                top: 8px;
+                right: 8px;
+                padding: 3px 6px;
+                gap: 3px;
+                border-radius: 20px;
             }
             .user-controls span {
-                font-size: 11px;
+                font-size: 9px;         /* 닉네임 글씨 작게 */
             }
             .control-btn {
-                padding: 3px 6px;
-                font-size: 9px;
-                border-radius: 10px;
+                padding: 2px 5px;
+                font-size: 8px;         /* 설정/로그아웃 버튼 초소형화 */
+                border-radius: 8px;
             }
 
             #score {
-                font-size: 60px;
-                margin: 10px 0;
+                font-size: 50px;
+                margin: 5px 0;
             }
 
             #popImage {
-                width: 220px;
+                width: 200px;           /* 캐릭터 이미지도 모바일에 알맞게 축소 */
             }
         }
 
@@ -230,15 +237,15 @@
     </div>
 
     <div class="ranking-board">
-        <h3>🏆 실시간 랭킹</h3>
+        <h3>🏆 랭킹</h3>
         <ul id="rankList">
-            <li>불러오는 중...</li>
+            <li>로딩중</li>
         </ul>
     </div>
 
     <div id="userControls" class="user-controls" style="display: none;">
         <span id="userName">사용자님</span>
-        <button id="configBtn" class="control-btn">⚙️ 설정</button>
+        <button id="configBtn" class="control-btn">⚙️</button>
         <button id="logoutBtn" class="control-btn logout">로그아웃</button>
     </div>
 
@@ -393,13 +400,13 @@
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     const li = document.createElement('li');
-                    li.innerHTML = `<span>${rank}. ${data.name}</span> <strong>${data.score}점</strong>`;
+                    li.innerHTML = `<span>${rank}. ${data.name}</span> <strong>${data.score}</strong>`;
                     rankList.appendChild(li);
                     rank++;
                 });
             }, (error) => {
                 console.error("랭킹 불러오기 실패:", error);
-                rankList.innerHTML = "<li>랭킹 로드 실패</li>";
+                rankList.innerHTML = "<li>로드 실패</li>";
             });
         }
 
