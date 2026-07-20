@@ -46,7 +46,44 @@
     </style>
 </head>
 <body>
+    <h1>내 웹사이트 로그인 테스트</h1>
+    <button id="google-login-btn">구글로 로그인</button>
 
+    <!-- 1. 파이어베이스 및 로그인 관련 기능을 사용할 수 있는 스크립트 작성 영역 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        // 구글 로그인에 필요한 함수들 추가 import
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // 2. 보내주신 설정 코드 그대로 붙여넣기
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkc_5meIA6xKzLyfLvR1Q3LI4yaCOENXw",
+            authDomain: "pophyeonwoo.firebaseapp.com",
+            projectId: "pophyeonwoo",
+            storageBucket: "pophyeonwoo.firebasestorage.app",
+            messagingSenderId: "555016133326",
+            appId: "1:555016133326:web:daad017eef06b063388e9f",
+            measurementId: "G-73S9FCZQ2R"
+        };
+
+        // 3. Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // 4. 구글 로그인 버튼 동작 연결
+        document.getElementById('google-login-btn').addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    alert(`${result.user.displayName}님 환영합니다!`);
+                })
+                .catch((error) => {
+                    console.error("로그인 실패:", error);
+                });
+        });
+    </script>
     <!-- 점수판 -->
     <h1 id="score">0</h1>
     
